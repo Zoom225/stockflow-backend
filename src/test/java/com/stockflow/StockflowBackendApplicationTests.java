@@ -1,10 +1,22 @@
 package com.stockflow;
 
+import com.stockflow.repository.CategoryRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-@SpringBootTest
+@SpringBootTest(properties = {
+		"spring.autoconfigure.exclude=" +
+				"org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration," +
+				"org.springframework.boot.jdbc.autoconfigure.DataSourceTransactionManagerAutoConfiguration," +
+				"org.springframework.boot.jdbc.autoconfigure.JdbcClientAutoConfiguration," +
+				"org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration," +
+				"org.springframework.boot.data.jpa.autoconfigure.DataJpaRepositoriesAutoConfiguration"
+})
 class StockflowBackendApplicationTests {
+
+	@MockitoBean
+	private CategoryRepository categoryRepository;
 
 	@Test
 	void contextLoads() {
