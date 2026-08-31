@@ -1,6 +1,7 @@
 package com.stockflow;
 
 import com.stockflow.repository.CategoryRepository;
+import com.stockflow.repository.SupplierRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -17,6 +18,9 @@ class StockflowBackendApplicationTests {
 
 	@MockitoBean
 	private CategoryRepository categoryRepository;
+
+	@MockitoBean
+	private SupplierRepository supplierRepository;
 
 	@Test
 	void contextLoads() {
