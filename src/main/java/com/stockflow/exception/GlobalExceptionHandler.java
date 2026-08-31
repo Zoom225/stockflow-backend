@@ -31,6 +31,14 @@ public class GlobalExceptionHandler {
 		return buildResponse(HttpStatus.CONFLICT, exception.getMessage(), request.getRequestURI(), null);
 	}
 
+	@ExceptionHandler(InsufficientStockException.class)
+	public ResponseEntity<ApiErrorResponse> handleInsufficientStock(
+			InsufficientStockException exception,
+			HttpServletRequest request
+	) {
+		return buildResponse(HttpStatus.BAD_REQUEST, exception.getMessage(), request.getRequestURI(), null);
+	}
+
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ApiErrorResponse> handleValidationException(
 			MethodArgumentNotValidException exception,

@@ -199,6 +199,7 @@ class ProductServiceImplTests {
 		product.setDescription("Sample description");
 		product.setPurchasePrice(new BigDecimal("8.50"));
 		product.setSellingPrice(new BigDecimal("12.90"));
+		product.setQuantityInStock(0);
 		product.setCategory(category);
 		product.setSupplier(supplier);
 		product.setCreatedAt(Instant.parse("2026-08-31T10:15:30Z"));

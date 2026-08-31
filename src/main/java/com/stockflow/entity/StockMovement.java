@@ -2,6 +2,8 @@ package com.stockflow.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,7 +13,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import java.math.BigDecimal;
 import java.time.Instant;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,38 +20,29 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "products")
-public class Product {
+@Table(name = "stock_movements")
+public class StockMovement {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = false, unique = true, length = 50)
-	private String sku;
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "product_id", nullable = false)
+	private Product product;
 
-	@Column(nullable = false, length = 150)
-	private String name;
-
-	@Column(length = 255)
-	private String description;
-
-	@Column(nullable = false, precision = 12, scale = 2)
-	private BigDecimal purchasePrice;
-
-	@Column(nullable = false, precision = 12, scale = 2)
-	private BigDecimal sellingPrice;
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false, length = 10)
+	private StockMovementType type;
 
 	@Column(nullable = false)
-	private Integer quantityInStock;
+	private Integer quantity;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "category_id", nullable = false)
-	private Category category;
+	@Column(length = 255)
+	private String reason;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "supplier_id")
-	private Supplier supplier;
+	@Column(nullable = false)
+	private Instant movementDate;
 
 	@Column(nullable = false, updatable = false)
 	private Instant createdAt;
@@ -61,11 +53,11 @@ public class Product {
 	@PrePersist
 	void onCreate() {
 		Instant now = Instant.now();
-		if (this.quantityInStock == null) {
-			this.quantityInStock = 0;
-		}
 		this.createdAt = now;
 		this.updatedAt = now;
+		if (this.movementDate == null) {
+			this.movementDate = now;
+		}
 	}
 
 	@PreUpdate

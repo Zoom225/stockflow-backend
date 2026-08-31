@@ -34,6 +34,7 @@ public class ProductMapper {
 				product.getDescription(),
 				product.getPurchasePrice(),
 				product.getSellingPrice(),
+				product.getQuantityInStock(),
 				product.getCategory().getId(),
 				product.getCategory().getName(),
 				product.getSupplier() != null ? product.getSupplier().getId() : null,
