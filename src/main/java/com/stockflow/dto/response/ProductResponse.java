@@ -10,6 +10,7 @@ public record ProductResponse(
 		String description,
 		BigDecimal purchasePrice,
 		BigDecimal sellingPrice,
+		Integer quantityInStock,
 		Long categoryId,
 		String categoryName,
 		Long supplierId,

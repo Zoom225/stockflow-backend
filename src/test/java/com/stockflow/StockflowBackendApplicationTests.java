@@ -2,6 +2,7 @@ package com.stockflow;
 
 import com.stockflow.repository.CategoryRepository;
 import com.stockflow.repository.ProductRepository;
+import com.stockflow.repository.StockMovementRepository;
 import com.stockflow.repository.SupplierRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,6 +26,9 @@ class StockflowBackendApplicationTests {
 
 	@MockitoBean
 	private ProductRepository productRepository;
+
+	@MockitoBean
+	private StockMovementRepository stockMovementRepository;
 
 	@Test
 	void contextLoads() {
