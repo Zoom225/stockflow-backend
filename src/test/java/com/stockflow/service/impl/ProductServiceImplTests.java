@@ -62,6 +62,7 @@ class ProductServiceImplTests {
 				new BigDecimal("8.50"),
 				new BigDecimal("12.90"),
 				1L,
+				5,
 				2L
 		);
 		Category category = buildCategory(1L, "Food");
@@ -78,6 +79,7 @@ class ProductServiceImplTests {
 		assertNotNull(response);
 		assertEquals(1L, response.id());
 		assertEquals("SKU-001", response.sku());
+		assertEquals(5, response.minimumStock());
 		assertEquals("Food", response.categoryName());
 		assertEquals("Fresh Foods", response.supplierName());
 		verify(productRepository).save(any(Product.class));
@@ -92,6 +94,7 @@ class ProductServiceImplTests {
 				new BigDecimal("8.50"),
 				new BigDecimal("12.90"),
 				1L,
+				5,
 				2L
 		);
 
@@ -110,6 +113,7 @@ class ProductServiceImplTests {
 				new BigDecimal("8.50"),
 				new BigDecimal("12.90"),
 				99L,
+				5,
 				null
 		);
 
@@ -137,6 +141,27 @@ class ProductServiceImplTests {
 	}
 
 	@Test
+	void shouldReturnLowStockProducts() {
+		Category category = buildCategory(1L, "Food");
+		Product lowStock = buildProduct(1L, "SKU-001", "Olive Oil", category, null);
+		lowStock.setQuantityInStock(2);
+		lowStock.setMinimumStock(5);
+
+		Product healthyStock = buildProduct(2L, "SKU-002", "Rice", category, null);
+		healthyStock.setQuantityInStock(20);
+		healthyStock.setMinimumStock(5);
+
+		when(productRepository.findByQuantityInStockLessThanEqualMinimumStockOrderByQuantityInStockAscNameAsc())
+				.thenReturn(List.of(lowStock));
+
+		List<ProductResponse> responses = productService.getLowStockProducts();
+
+		assertEquals(1, responses.size());
+		assertEquals("SKU-001", responses.getFirst().sku());
+		assertEquals(true, responses.getFirst().lowStock());
+	}
+
+	@Test
 	void shouldReturnProductById() {
 		Category category = buildCategory(1L, "Food");
 		Supplier supplier = buildSupplier(2L, "Fresh Foods");
@@ -157,6 +182,7 @@ class ProductServiceImplTests {
 		Supplier supplier = buildSupplier(2L, "Fresh Foods");
 		Product existingProduct = buildProduct(1L, "SKU-001", "Olive Oil", oldCategory, supplier);
 		Product updatedProduct = buildProduct(1L, "SKU-003", "Sparkling Water", newCategory, null);
+		updatedProduct.setMinimumStock(4);
 		ProductRequest request = new ProductRequest(
 				"SKU-003",
 				"Sparkling Water",
@@ -164,6 +190,7 @@ class ProductServiceImplTests {
 				new BigDecimal("1.50"),
 				new BigDecimal("2.90"),
 				3L,
+				4,
 				null
 		);
 
@@ -175,6 +202,7 @@ class ProductServiceImplTests {
 		ProductResponse response = productService.updateProduct(1L, request);
 
 		assertEquals("SKU-003", response.sku());
+		assertEquals(4, response.minimumStock());
 		assertEquals("Beverages", response.categoryName());
 		assertEquals(null, response.supplierId());
 	}
@@ -200,6 +228,7 @@ class ProductServiceImplTests {
 		product.setPurchasePrice(new BigDecimal("8.50"));
 		product.setSellingPrice(new BigDecimal("12.90"));
 		product.setQuantityInStock(0);
+		product.setMinimumStock(5);
 		product.setCategory(category);
 		product.setSupplier(supplier);
 		product.setCreatedAt(Instant.parse("2026-08-31T10:15:30Z"));

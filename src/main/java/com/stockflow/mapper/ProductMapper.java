@@ -22,6 +22,7 @@ public class ProductMapper {
 		product.setDescription(normalizeOptional(request.description()));
 		product.setPurchasePrice(request.purchasePrice());
 		product.setSellingPrice(request.sellingPrice());
+		product.setMinimumStock(request.minimumStock());
 		product.setCategory(category);
 		product.setSupplier(supplier);
 	}
@@ -35,6 +36,8 @@ public class ProductMapper {
 				product.getPurchasePrice(),
 				product.getSellingPrice(),
 				product.getQuantityInStock(),
+				product.getMinimumStock(),
+				product.getQuantityInStock() <= product.getMinimumStock(),
 				product.getCategory().getId(),
 				product.getCategory().getName(),
 				product.getSupplier() != null ? product.getSupplier().getId() : null,

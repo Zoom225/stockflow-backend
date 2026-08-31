@@ -11,6 +11,8 @@ public record ProductResponse(
 		BigDecimal purchasePrice,
 		BigDecimal sellingPrice,
 		Integer quantityInStock,
+		Integer minimumStock,
+		boolean lowStock,
 		Long categoryId,
 		String categoryName,
 		Long supplierId,

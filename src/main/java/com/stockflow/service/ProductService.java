@@ -10,6 +10,8 @@ public interface ProductService {
 
 	List<ProductResponse> getAllProducts();
 
+	List<ProductResponse> getLowStockProducts();
+
 	ProductResponse getProductById(Long id);
 
 	ProductResponse updateProduct(Long id, ProductRequest request);

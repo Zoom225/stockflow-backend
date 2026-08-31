@@ -1,6 +1,7 @@
 package com.stockflow.dto.request;
 
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -28,6 +29,10 @@ public record ProductRequest(
 
 		@NotNull(message = "Category id is required")
 		Long categoryId,
+
+		@NotNull(message = "Minimum stock is required")
+		@Min(value = 0, message = "Minimum stock must be greater than or equal to 0")
+		Integer minimumStock,
 
 		Long supplierId
 ) {
