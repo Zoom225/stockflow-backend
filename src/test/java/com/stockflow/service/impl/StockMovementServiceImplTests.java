@@ -7,6 +7,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.stockflow.dto.request.RestockProductRequest;
 import com.stockflow.dto.request.StockMovementRequest;
 import com.stockflow.dto.response.StockMovementResponse;
 import com.stockflow.entity.Category;
@@ -69,6 +70,27 @@ class StockMovementServiceImplTests {
 		assertEquals(15, product.getQuantityInStock());
 		assertEquals(StockMovementType.IN, response.type());
 		verify(stockMovementRepository).save(any(StockMovement.class));
+	}
+
+	@Test
+	void shouldRestockProductWithInboundMovement() {
+		Product product = buildProduct(1L, "SKU-001", "Olive Oil", 10);
+		RestockProductRequest request = new RestockProductRequest(
+				8,
+				"Supplier delivery",
+				Instant.parse("2026-08-31T15:00:00Z")
+		);
+		StockMovement savedMovement = buildMovement(1L, product, StockMovementType.IN, 8);
+
+		when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+		when(productRepository.save(product)).thenReturn(product);
+		when(stockMovementRepository.save(any(StockMovement.class))).thenReturn(savedMovement);
+
+		StockMovementResponse response = stockMovementService.restockProduct(1L, request);
+
+		assertEquals(18, product.getQuantityInStock());
+		assertEquals(StockMovementType.IN, response.type());
+		assertEquals(8, response.quantity());
 	}
 
 	@Test
