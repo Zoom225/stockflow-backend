@@ -51,6 +51,14 @@ public class StockMovementServiceImpl implements StockMovementService {
 	}
 
 	@Override
+	public List<StockMovementResponse> getStockMovementsByProductId(Long productId) {
+		findProductById(productId);
+		return stockMovementRepository.findByProductIdOrderByMovementDateDesc(productId).stream()
+				.map(stockMovementMapper::toResponse)
+				.toList();
+	}
+
+	@Override
 	@Transactional
 	public StockMovementResponse updateStockMovement(Long id, StockMovementRequest request) {
 		StockMovement existingMovement = findMovementById(id);

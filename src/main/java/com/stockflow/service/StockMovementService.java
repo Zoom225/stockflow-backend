@@ -12,6 +12,8 @@ public interface StockMovementService {
 
 	StockMovementResponse getStockMovementById(Long id);
 
+	List<StockMovementResponse> getStockMovementsByProductId(Long productId);
+
 	StockMovementResponse updateStockMovement(Long id, StockMovementRequest request);
 
 	void deleteStockMovement(Long id);

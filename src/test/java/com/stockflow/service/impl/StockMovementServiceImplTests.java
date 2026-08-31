@@ -117,6 +117,42 @@ class StockMovementServiceImplTests {
 	}
 
 	@Test
+	void shouldReturnProductMovementHistoryOrderedByMovementDateDesc() {
+		Product product = buildProduct(1L, "SKU-001", "Olive Oil", 10);
+		StockMovement mostRecent = buildMovement(
+				2L,
+				product,
+				StockMovementType.OUT,
+				2,
+				Instant.parse("2026-08-31T14:00:00Z")
+		);
+		StockMovement older = buildMovement(
+				1L,
+				product,
+				StockMovementType.IN,
+				5,
+				Instant.parse("2026-08-31T09:00:00Z")
+		);
+
+		when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+		when(stockMovementRepository.findByProductIdOrderByMovementDateDesc(1L))
+				.thenReturn(List.of(mostRecent, older));
+
+		List<StockMovementResponse> responses = stockMovementService.getStockMovementsByProductId(1L);
+
+		assertEquals(2, responses.size());
+		assertEquals(2L, responses.getFirst().id());
+		assertEquals(1L, responses.get(1).id());
+	}
+
+	@Test
+	void shouldThrowWhenProductHistoryRequestedForUnknownProduct() {
+		when(productRepository.findById(99L)).thenReturn(Optional.empty());
+
+		assertThrows(ResourceNotFoundException.class, () -> stockMovementService.getStockMovementsByProductId(99L));
+	}
+
+	@Test
 	void shouldUpdateMovementAndAdjustStock() {
 		Product product = buildProduct(1L, "SKU-001", "Olive Oil", 15);
 		StockMovement existingMovement = buildMovement(1L, product, StockMovementType.IN, 5);
@@ -181,15 +217,25 @@ class StockMovementServiceImplTests {
 	}
 
 	private StockMovement buildMovement(Long id, Product product, StockMovementType type, int quantity) {
+		return buildMovement(id, product, type, quantity, Instant.parse("2026-08-31T12:00:00Z"));
+	}
+
+	private StockMovement buildMovement(
+			Long id,
+			Product product,
+			StockMovementType type,
+			int quantity,
+			Instant movementDate
+	) {
 		StockMovement movement = new StockMovement();
 		movement.setId(id);
 		movement.setProduct(product);
 		movement.setType(type);
 		movement.setQuantity(quantity);
 		movement.setReason("Sample reason");
-		movement.setMovementDate(Instant.parse("2026-08-31T12:00:00Z"));
-		movement.setCreatedAt(Instant.parse("2026-08-31T12:00:00Z"));
-		movement.setUpdatedAt(Instant.parse("2026-08-31T12:00:00Z"));
+		movement.setMovementDate(movementDate);
+		movement.setCreatedAt(movementDate);
+		movement.setUpdatedAt(movementDate);
 		return movement;
 	}
 }
