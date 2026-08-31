@@ -35,6 +35,11 @@ public class StockMovementController {
 		return ResponseEntity.ok(stockMovementService.getAllStockMovements());
 	}
 
+	@GetMapping("/products/{productId}")
+	public ResponseEntity<List<StockMovementResponse>> getStockMovementsByProductId(@PathVariable Long productId) {
+		return ResponseEntity.ok(stockMovementService.getStockMovementsByProductId(productId));
+	}
+
 	@GetMapping("/{id}")
 	public ResponseEntity<StockMovementResponse> getStockMovementById(@PathVariable Long id) {
 		return ResponseEntity.ok(stockMovementService.getStockMovementById(id));

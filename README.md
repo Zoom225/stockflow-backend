@@ -58,3 +58,16 @@ You can override the default connection with:
 - `DB_URL`
 - `DB_USERNAME`
 - `DB_PASSWORD`
+
+## API Endpoints
+
+### Stock movements
+
+- `GET /api/stock-movements`
+- `GET /api/stock-movements/{id}`
+- `GET /api/stock-movements/products/{productId}`
+- `POST /api/stock-movements`
+- `PUT /api/stock-movements/{id}`
+- `DELETE /api/stock-movements/{id}`
+
+The product history endpoint returns the stock movements for one product ordered by `movementDate` descending.
