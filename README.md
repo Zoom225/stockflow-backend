@@ -61,13 +61,26 @@ You can override the default connection with:
 
 ## API Endpoints
 
+### Products
+
+- `GET /api/products`
+- `GET /api/products/low-stock`
+- `GET /api/products/{id}`
+- `POST /api/products`
+- `PUT /api/products/{id}`
+- `DELETE /api/products/{id}`
+
+The low-stock endpoint returns products where `quantityInStock <= minimumStock`.
+
 ### Stock movements
 
 - `GET /api/stock-movements`
 - `GET /api/stock-movements/{id}`
 - `GET /api/stock-movements/products/{productId}`
+- `POST /api/stock-movements/products/{productId}/restock`
 - `POST /api/stock-movements`
 - `PUT /api/stock-movements/{id}`
 - `DELETE /api/stock-movements/{id}`
 
 The product history endpoint returns the stock movements for one product ordered by `movementDate` descending.
+The restock endpoint creates an inbound stock movement and increases the current stock of the product.

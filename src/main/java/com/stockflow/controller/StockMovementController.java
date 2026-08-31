@@ -1,5 +1,6 @@
 package com.stockflow.controller;
 
+import com.stockflow.dto.request.RestockProductRequest;
 import com.stockflow.dto.request.StockMovementRequest;
 import com.stockflow.dto.response.StockMovementResponse;
 import com.stockflow.service.StockMovementService;
@@ -27,6 +28,15 @@ public class StockMovementController {
 	@PostMapping
 	public ResponseEntity<StockMovementResponse> createStockMovement(@Valid @RequestBody StockMovementRequest request) {
 		StockMovementResponse createdMovement = stockMovementService.createStockMovement(request);
+		return ResponseEntity.status(HttpStatus.CREATED).body(createdMovement);
+	}
+
+	@PostMapping("/products/{productId}/restock")
+	public ResponseEntity<StockMovementResponse> restockProduct(
+			@PathVariable Long productId,
+			@Valid @RequestBody RestockProductRequest request
+	) {
+		StockMovementResponse createdMovement = stockMovementService.restockProduct(productId, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(createdMovement);
 	}
 

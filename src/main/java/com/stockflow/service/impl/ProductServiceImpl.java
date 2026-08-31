@@ -48,6 +48,13 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
+	public List<ProductResponse> getLowStockProducts() {
+		return productRepository.findByQuantityInStockLessThanEqualMinimumStockOrderByQuantityInStockAscNameAsc().stream()
+				.map(productMapper::toResponse)
+				.toList();
+	}
+
+	@Override
 	public ProductResponse getProductById(Long id) {
 		return productMapper.toResponse(findProductById(id));
 	}

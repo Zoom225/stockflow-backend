@@ -1,5 +1,6 @@
 package com.stockflow.service.impl;
 
+import com.stockflow.dto.request.RestockProductRequest;
 import com.stockflow.dto.request.StockMovementRequest;
 import com.stockflow.dto.response.StockMovementResponse;
 import com.stockflow.entity.Product;
@@ -36,6 +37,18 @@ public class StockMovementServiceImpl implements StockMovementService {
 		StockMovement savedMovement = stockMovementRepository.save(movement);
 		savedMovement.setProduct(savedProduct);
 		return stockMovementMapper.toResponse(savedMovement);
+	}
+
+	@Override
+	@Transactional
+	public StockMovementResponse restockProduct(Long productId, RestockProductRequest request) {
+		return createStockMovement(new StockMovementRequest(
+				productId,
+				StockMovementType.IN,
+				request.quantity(),
+				request.reason(),
+				request.movementDate()
+		));
 	}
 
 	@Override

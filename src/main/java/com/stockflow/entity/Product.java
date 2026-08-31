@@ -44,6 +44,9 @@ public class Product {
 	@Column(nullable = false)
 	private Integer quantityInStock;
 
+	@Column(nullable = false)
+	private Integer minimumStock;
+
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "category_id", nullable = false)
 	private Category category;
@@ -63,6 +66,9 @@ public class Product {
 		Instant now = Instant.now();
 		if (this.quantityInStock == null) {
 			this.quantityInStock = 0;
+		}
+		if (this.minimumStock == null) {
+			this.minimumStock = 0;
 		}
 		this.createdAt = now;
 		this.updatedAt = now;
