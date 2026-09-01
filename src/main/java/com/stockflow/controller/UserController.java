@@ -1,6 +1,7 @@
 package com.stockflow.controller;
 
 import com.stockflow.dto.request.UpdateUserRequest;
+import com.stockflow.dto.request.UpdateUserRoleRequest;
 import com.stockflow.dto.response.UserResponse;
 import com.stockflow.service.UserService;
 import jakarta.validation.Valid;
@@ -38,6 +39,14 @@ public class UserController {
 			@Valid @RequestBody UpdateUserRequest request
 	) {
 		return ResponseEntity.ok(userService.updateUser(id, request));
+	}
+
+	@PutMapping("/{id}/role")
+	public ResponseEntity<UserResponse> updateUserRole(
+			@PathVariable Long id,
+			@Valid @RequestBody UpdateUserRoleRequest request
+	) {
+		return ResponseEntity.ok(userService.updateUserRole(id, request));
 	}
 
 	@DeleteMapping("/{id}")
