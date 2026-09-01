@@ -49,6 +49,7 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public List<ProductResponse> getLowStockProducts() {
+		// Regle metier : un produit est en alerte quand son stock courant est inferieur ou egal au stock minimum.
 		return productRepository.findByQuantityInStockLessThanEqualMinimumStockOrderByQuantityInStockAscNameAsc().stream()
 				.map(productMapper::toResponse)
 				.toList();
@@ -81,13 +82,15 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	private Product findProductById(Long id) {
+		// Regle metier : un produit doit exister avant toute lecture, modification ou suppression.
 		return productRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
+				.orElseThrow(() -> new ResourceNotFoundException("Produit introuvable avec l'identifiant : " + id));
 	}
 
 	private Category findCategoryById(Long id) {
+		// Regle metier : un produit doit toujours etre rattache a une categorie existante.
 		return categoryRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
+				.orElseThrow(() -> new ResourceNotFoundException("Categorie introuvable avec l'identifiant : " + id));
 	}
 
 	private Supplier findSupplierByIdOrNull(Long id) {
@@ -95,18 +98,21 @@ public class ProductServiceImpl implements ProductService {
 			return null;
 		}
 
+		// Regle metier : si un fournisseur est renseigne sur le produit, il doit exister.
 		return supplierRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Supplier not found with id: " + id));
+				.orElseThrow(() -> new ResourceNotFoundException("Fournisseur introuvable avec l'identifiant : " + id));
 	}
 
 	private void validateUniqueSku(String sku, Long productId) {
 		String normalizedSku = sku == null ? null : sku.trim();
+
+		// Regle metier : le SKU identifie un produit de facon unique dans le stock.
 		boolean exists = productId == null
 				? productRepository.existsBySkuIgnoreCase(normalizedSku)
 				: productRepository.existsBySkuIgnoreCaseAndIdNot(normalizedSku, productId);
 
 		if (exists) {
-			throw new DuplicateResourceException("Product SKU already exists: " + normalizedSku);
+			throw new DuplicateResourceException("Le SKU du produit existe deja : " + normalizedSku);
 		}
 	}
 }

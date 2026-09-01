@@ -1,6 +1,6 @@
 # StockFlow Backend
 
-Backend REST API for the StockFlow inventory management application.
+API REST backend pour l'application de gestion de stock StockFlow.
 
 ## Technologies
 
@@ -14,54 +14,54 @@ Backend REST API for the StockFlow inventory management application.
 - Bean Validation
 - Lombok
 
-## Project
+## Projet
 
-StockFlow is an inventory management application for small and medium-sized businesses.
+StockFlow est une application de gestion de stock pour les petites et moyennes entreprises.
 
-Main features will include:
+Les fonctionnalites principales prevues sont :
 
-- Product management
-- Category management
-- Supplier management
-- Stock entries and exits
-- Stock movement history
-- Low-stock alerts
-- Authentication and authorization
-- Dashboard
+- gestion des produits
+- gestion des categories
+- gestion des fournisseurs
+- entrees et sorties de stock
+- historique des mouvements de stock
+- alertes de stock faible
+- authentification et autorisation
+- tableau de bord
 
-## Run Locally
+## Lancement en local
 
-### 1. Start PostgreSQL
+### 1. Demarrer PostgreSQL
 
 ```bash
 docker compose up -d
 ```
 
-The default database credentials are:
+Les identifiants par defaut de la base sont :
 
-- Database: `stockflow`
-- User: `stockflow`
-- Password: `stockflow`
+- Base de donnees : `stockflow`
+- Utilisateur : `stockflow`
+- Mot de passe : `stockflow`
 
-### 2. Run the application
+### 2. Lancer l'application
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-On startup, Flyway applies the SQL migrations from `src/main/resources/db/migration` and Hibernate validates that the entity mappings match the schema.
+Au demarrage, Flyway applique les migrations SQL situees dans `src/main/resources/db/migration` et Hibernate verifie que les mappings des entites correspondent bien au schema.
 
-### 3. Optional environment variables
+### 3. Variables d'environnement optionnelles
 
-You can override the default connection with:
+Tu peux surcharger la connexion par defaut avec :
 
 - `DB_URL`
 - `DB_USERNAME`
 - `DB_PASSWORD`
 
-## API Endpoints
+## Endpoints API
 
-### Products
+### Produits
 
 - `GET /api/products`
 - `GET /api/products/low-stock`
@@ -70,9 +70,9 @@ You can override the default connection with:
 - `PUT /api/products/{id}`
 - `DELETE /api/products/{id}`
 
-The low-stock endpoint returns products where `quantityInStock <= minimumStock`.
+L'endpoint de stock faible retourne les produits pour lesquels `quantityInStock <= minimumStock`.
 
-### Stock movements
+### Mouvements de stock
 
 - `GET /api/stock-movements`
 - `GET /api/stock-movements/{id}`
@@ -83,6 +83,6 @@ The low-stock endpoint returns products where `quantityInStock <= minimumStock`.
 - `PUT /api/stock-movements/{id}`
 - `DELETE /api/stock-movements/{id}`
 
-The product history endpoint returns the stock movements for one product ordered by `movementDate` descending.
-The restock endpoint creates an inbound stock movement and increases the current stock of the product.
-The outbound endpoint creates an outbound stock movement and decreases the current stock of the product.
+L'endpoint d'historique produit retourne les mouvements d'un produit tries par `movementDate` decroissante.
+L'endpoint de ravitaillement cree un mouvement d'entree en stock et augmente le stock courant du produit.
+L'endpoint de sortie cree un mouvement de sortie de stock et diminue le stock courant du produit.

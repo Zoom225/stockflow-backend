@@ -8,30 +8,30 @@ import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 
 public record ProductRequest(
-		@NotBlank(message = "Product SKU is required")
-		@Size(max = 50, message = "Product SKU must not exceed 50 characters")
+		@NotBlank(message = "Le SKU du produit est obligatoire")
+		@Size(max = 50, message = "Le SKU du produit ne doit pas depasser 50 caracteres")
 		String sku,
 
-		@NotBlank(message = "Product name is required")
-		@Size(max = 150, message = "Product name must not exceed 150 characters")
+		@NotBlank(message = "Le nom du produit est obligatoire")
+		@Size(max = 150, message = "Le nom du produit ne doit pas depasser 150 caracteres")
 		String name,
 
-		@Size(max = 255, message = "Product description must not exceed 255 characters")
+		@Size(max = 255, message = "La description du produit ne doit pas depasser 255 caracteres")
 		String description,
 
-		@NotNull(message = "Purchase price is required")
-		@DecimalMin(value = "0.00", inclusive = true, message = "Purchase price must be greater than or equal to 0")
+		@NotNull(message = "Le prix d'achat est obligatoire")
+		@DecimalMin(value = "0.00", inclusive = true, message = "Le prix d'achat doit etre superieur ou egal a 0")
 		BigDecimal purchasePrice,
 
-		@NotNull(message = "Selling price is required")
-		@DecimalMin(value = "0.00", inclusive = true, message = "Selling price must be greater than or equal to 0")
+		@NotNull(message = "Le prix de vente est obligatoire")
+		@DecimalMin(value = "0.00", inclusive = true, message = "Le prix de vente doit etre superieur ou egal a 0")
 		BigDecimal sellingPrice,
 
-		@NotNull(message = "Category id is required")
+		@NotNull(message = "L'identifiant de la categorie est obligatoire")
 		Long categoryId,
 
-		@NotNull(message = "Minimum stock is required")
-		@Min(value = 0, message = "Minimum stock must be greater than or equal to 0")
+		@NotNull(message = "Le stock minimum est obligatoire")
+		@Min(value = 0, message = "Le stock minimum doit etre superieur ou egal a 0")
 		Integer minimumStock,
 
 		Long supplierId

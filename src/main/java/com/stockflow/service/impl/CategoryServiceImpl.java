@@ -62,18 +62,21 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	private Category findCategoryById(Long id) {
+		// Regle metier : une categorie demandee doit exister avant toute lecture, modification ou suppression.
 		return categoryRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
+				.orElseThrow(() -> new ResourceNotFoundException("Categorie introuvable avec l'identifiant : " + id));
 	}
 
 	private void validateUniqueName(String name, Long categoryId) {
 		String normalizedName = name == null ? null : name.trim();
+
+		// Regle metier : le nom d'une categorie doit rester unique dans tout le catalogue.
 		boolean exists = categoryId == null
 				? categoryRepository.existsByNameIgnoreCase(normalizedName)
 				: categoryRepository.existsByNameIgnoreCaseAndIdNot(normalizedName, categoryId);
 
 		if (exists) {
-			throw new DuplicateResourceException("Category name already exists: " + normalizedName);
+			throw new DuplicateResourceException("Le nom de categorie existe deja : " + normalizedName);
 		}
 	}
 }
