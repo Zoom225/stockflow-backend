@@ -6,10 +6,12 @@ import com.stockflow.entity.Category;
 import com.stockflow.entity.Product;
 import com.stockflow.entity.Supplier;
 import com.stockflow.exception.DuplicateResourceException;
+import com.stockflow.exception.ProductDeletionNotAllowedException;
 import com.stockflow.exception.ResourceNotFoundException;
 import com.stockflow.mapper.ProductMapper;
 import com.stockflow.repository.CategoryRepository;
 import com.stockflow.repository.ProductRepository;
+import com.stockflow.repository.StockMovementRepository;
 import com.stockflow.repository.SupplierRepository;
 import com.stockflow.service.ProductService;
 import java.util.List;
@@ -25,6 +27,7 @@ public class ProductServiceImpl implements ProductService {
 	private final ProductRepository productRepository;
 	private final CategoryRepository categoryRepository;
 	private final SupplierRepository supplierRepository;
+	private final StockMovementRepository stockMovementRepository;
 	private final ProductMapper productMapper;
 
 	@Override
@@ -78,6 +81,14 @@ public class ProductServiceImpl implements ProductService {
 	@Transactional
 	public void deleteProduct(Long id) {
 		Product product = findProductById(id);
+
+		// Regle metier : un produit ayant deja un historique de mouvements ne doit pas etre supprime.
+		if (stockMovementRepository.existsByProductId(id)) {
+			throw new ProductDeletionNotAllowedException(
+					"Suppression impossible : ce produit possede deja un historique de mouvements de stock."
+			);
+		}
+
 		productRepository.delete(product);
 	}
 

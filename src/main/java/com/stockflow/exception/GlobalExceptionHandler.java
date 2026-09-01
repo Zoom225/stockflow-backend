@@ -41,6 +41,14 @@ public class GlobalExceptionHandler {
 		return buildResponse(HttpStatus.CONFLICT, exception.getMessage(), request.getRequestURI(), null);
 	}
 
+	@ExceptionHandler(ProductDeletionNotAllowedException.class)
+	public ResponseEntity<ApiErrorResponse> handleProductDeletionNotAllowed(
+			ProductDeletionNotAllowedException exception,
+			HttpServletRequest request
+	) {
+		return buildResponse(HttpStatus.CONFLICT, exception.getMessage(), request.getRequestURI(), null);
+	}
+
 	@ExceptionHandler(InsufficientStockException.class)
 	public ResponseEntity<ApiErrorResponse> handleInsufficientStock(
 			InsufficientStockException exception,

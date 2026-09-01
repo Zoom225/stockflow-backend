@@ -77,6 +77,7 @@ L'endpoint du tableau de bord retourne les principaux indicateurs du stock ainsi
 - `DELETE /api/products/{id}`
 
 L'endpoint de stock faible retourne les produits pour lesquels `quantityInStock <= minimumStock`.
+La suppression d'un produit est refusee s'il possede deja un historique de mouvements de stock.
 
 ### Mouvements de stock
 
