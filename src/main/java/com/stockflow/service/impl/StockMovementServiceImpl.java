@@ -1,5 +1,6 @@
 package com.stockflow.service.impl;
 
+import com.stockflow.dto.request.OutboundStockRequest;
 import com.stockflow.dto.request.RestockProductRequest;
 import com.stockflow.dto.request.StockMovementRequest;
 import com.stockflow.dto.response.StockMovementResponse;
@@ -45,6 +46,18 @@ public class StockMovementServiceImpl implements StockMovementService {
 		return createStockMovement(new StockMovementRequest(
 				productId,
 				StockMovementType.IN,
+				request.quantity(),
+				request.reason(),
+				request.movementDate()
+		));
+	}
+
+	@Override
+	@Transactional
+	public StockMovementResponse createOutboundStock(Long productId, OutboundStockRequest request) {
+		return createStockMovement(new StockMovementRequest(
+				productId,
+				StockMovementType.OUT,
 				request.quantity(),
 				request.reason(),
 				request.movementDate()

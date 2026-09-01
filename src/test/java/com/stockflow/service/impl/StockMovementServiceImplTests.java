@@ -7,6 +7,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.stockflow.dto.request.OutboundStockRequest;
 import com.stockflow.dto.request.RestockProductRequest;
 import com.stockflow.dto.request.StockMovementRequest;
 import com.stockflow.dto.response.StockMovementResponse;
@@ -91,6 +92,42 @@ class StockMovementServiceImplTests {
 		assertEquals(18, product.getQuantityInStock());
 		assertEquals(StockMovementType.IN, response.type());
 		assertEquals(8, response.quantity());
+	}
+
+	@Test
+	void shouldCreateOutboundStockAndDecreaseProductQuantity() {
+		Product product = buildProduct(1L, "SKU-001", "Olive Oil", 12);
+		OutboundStockRequest request = new OutboundStockRequest(
+				4,
+				"Customer order",
+				Instant.parse("2026-09-01T10:00:00Z")
+		);
+		StockMovement savedMovement = buildMovement(1L, product, StockMovementType.OUT, 4);
+
+		when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+		when(productRepository.save(product)).thenReturn(product);
+		when(stockMovementRepository.save(any(StockMovement.class))).thenReturn(savedMovement);
+
+		StockMovementResponse response = stockMovementService.createOutboundStock(1L, request);
+
+		assertEquals(8, product.getQuantityInStock());
+		assertEquals(StockMovementType.OUT, response.type());
+		assertEquals(4, response.quantity());
+	}
+
+	@Test
+	void shouldRejectOutboundStockWhenQuantityExceedsAvailableStock() {
+		Product product = buildProduct(1L, "SKU-001", "Olive Oil", 3);
+		OutboundStockRequest request = new OutboundStockRequest(
+				5,
+				"Customer order",
+				Instant.parse("2026-09-01T10:00:00Z")
+		);
+
+		when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+
+		assertThrows(InsufficientStockException.class, () -> stockMovementService.createOutboundStock(1L, request));
+		verify(stockMovementRepository, never()).save(any(StockMovement.class));
 	}
 
 	@Test

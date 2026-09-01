@@ -78,9 +78,11 @@ The low-stock endpoint returns products where `quantityInStock <= minimumStock`.
 - `GET /api/stock-movements/{id}`
 - `GET /api/stock-movements/products/{productId}`
 - `POST /api/stock-movements/products/{productId}/restock`
+- `POST /api/stock-movements/products/{productId}/outbound`
 - `POST /api/stock-movements`
 - `PUT /api/stock-movements/{id}`
 - `DELETE /api/stock-movements/{id}`
 
 The product history endpoint returns the stock movements for one product ordered by `movementDate` descending.
 The restock endpoint creates an inbound stock movement and increases the current stock of the product.
+The outbound endpoint creates an outbound stock movement and decreases the current stock of the product.
