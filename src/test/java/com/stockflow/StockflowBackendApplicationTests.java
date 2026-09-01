@@ -4,6 +4,7 @@ import com.stockflow.repository.CategoryRepository;
 import com.stockflow.repository.ProductRepository;
 import com.stockflow.repository.StockMovementRepository;
 import com.stockflow.repository.SupplierRepository;
+import com.stockflow.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -14,7 +15,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 				"org.springframework.boot.jdbc.autoconfigure.DataSourceTransactionManagerAutoConfiguration," +
 				"org.springframework.boot.jdbc.autoconfigure.JdbcClientAutoConfiguration," +
 				"org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration," +
-				"org.springframework.boot.data.jpa.autoconfigure.DataJpaRepositoriesAutoConfiguration"
+				"org.springframework.boot.data.jpa.autoconfigure.DataJpaRepositoriesAutoConfiguration",
+		"jwt.secret=MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWYwMTIzNDU2Nzg5YWJjZGVm",
+		"jwt.expiration-ms=86400000"
 })
 class StockflowBackendApplicationTests {
 
@@ -29,6 +32,9 @@ class StockflowBackendApplicationTests {
 
 	@MockitoBean
 	private StockMovementRepository stockMovementRepository;
+
+	@MockitoBean
+	private UserRepository userRepository;
 
 	@Test
 	void contextLoads() {
