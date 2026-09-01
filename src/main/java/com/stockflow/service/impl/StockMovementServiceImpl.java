@@ -43,6 +43,7 @@ public class StockMovementServiceImpl implements StockMovementService {
 	@Override
 	@Transactional
 	public StockMovementResponse restockProduct(Long productId, RestockProductRequest request) {
+		// Regle metier : un ravitaillement doit toujours produire un mouvement d'entree en stock.
 		return createStockMovement(new StockMovementRequest(
 				productId,
 				StockMovementType.IN,
@@ -55,6 +56,7 @@ public class StockMovementServiceImpl implements StockMovementService {
 	@Override
 	@Transactional
 	public StockMovementResponse createOutboundStock(Long productId, OutboundStockRequest request) {
+		// Regle metier : une sortie dediee doit toujours produire un mouvement de sortie de stock.
 		return createStockMovement(new StockMovementRequest(
 				productId,
 				StockMovementType.OUT,
@@ -78,6 +80,7 @@ public class StockMovementServiceImpl implements StockMovementService {
 
 	@Override
 	public List<StockMovementResponse> getStockMovementsByProductId(Long productId) {
+		// Regle metier : l'historique n'est consultable que pour un produit existant.
 		findProductById(productId);
 		return stockMovementRepository.findByProductIdOrderByMovementDateDesc(productId).stream()
 				.map(stockMovementMapper::toResponse)
@@ -115,38 +118,44 @@ public class StockMovementServiceImpl implements StockMovementService {
 	}
 
 	private StockMovement findMovementById(Long id) {
+		// Regle metier : un mouvement de stock doit exister avant toute consultation, modification ou suppression.
 		return stockMovementRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Stock movement not found with id: " + id));
+				.orElseThrow(() -> new ResourceNotFoundException("Mouvement de stock introuvable avec l'identifiant : " + id));
 	}
 
 	private Product findProductById(Long id) {
+		// Regle metier : tout mouvement doit cibler un produit existant.
 		return productRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
+				.orElseThrow(() -> new ResourceNotFoundException("Produit introuvable avec l'identifiant : " + id));
 	}
 
 	private void applyMovement(Product product, StockMovementType type, int quantity) {
+		// Regle metier : une entree augmente toujours le stock courant du produit.
 		if (type == StockMovementType.IN) {
 			product.setQuantityInStock(product.getQuantityInStock() + quantity);
 			return;
 		}
 
+		// Regle metier : une sortie ne doit jamais rendre le stock negatif.
 		int updatedQuantity = product.getQuantityInStock() - quantity;
 		if (updatedQuantity < 0) {
-			throw new InsufficientStockException("Insufficient stock for product id: " + product.getId());
+			throw new InsufficientStockException("Stock insuffisant pour le produit avec l'identifiant : " + product.getId());
 		}
 		product.setQuantityInStock(updatedQuantity);
 	}
 
 	private void revertMovement(Product product, StockMovementType type, int quantity) {
+		// Regle metier : annuler une entree retire la quantite ajoutee precedemment.
 		if (type == StockMovementType.IN) {
 			int updatedQuantity = product.getQuantityInStock() - quantity;
 			if (updatedQuantity < 0) {
-				throw new InsufficientStockException("Cannot revert stock movement for product id: " + product.getId());
+				throw new InsufficientStockException("Impossible d'annuler le mouvement de stock pour le produit avec l'identifiant : " + product.getId());
 			}
 			product.setQuantityInStock(updatedQuantity);
 			return;
 		}
 
+		// Regle metier : annuler une sortie restitue la quantite precedemment retiree.
 		product.setQuantityInStock(product.getQuantityInStock() + quantity);
 	}
 }

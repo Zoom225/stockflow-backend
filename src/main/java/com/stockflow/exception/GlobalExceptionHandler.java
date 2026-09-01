@@ -3,6 +3,7 @@ package com.stockflow.exception;
 import com.stockflow.dto.response.ApiErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
+import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+	private static final Map<HttpStatus, String> STATUS_LABELS = new EnumMap<>(HttpStatus.class);
+
+	static {
+		STATUS_LABELS.put(HttpStatus.BAD_REQUEST, "Requete incorrecte");
+		STATUS_LABELS.put(HttpStatus.NOT_FOUND, "Ressource introuvable");
+		STATUS_LABELS.put(HttpStatus.CONFLICT, "Conflit");
+		STATUS_LABELS.put(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur interne du serveur");
+	}
+
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<ApiErrorResponse> handleResourceNotFound(
 			ResourceNotFoundException exception,
@@ -26,6 +36,14 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(DuplicateResourceException.class)
 	public ResponseEntity<ApiErrorResponse> handleDuplicateResource(
 			DuplicateResourceException exception,
+			HttpServletRequest request
+	) {
+		return buildResponse(HttpStatus.CONFLICT, exception.getMessage(), request.getRequestURI(), null);
+	}
+
+	@ExceptionHandler(ProductDeletionNotAllowedException.class)
+	public ResponseEntity<ApiErrorResponse> handleProductDeletionNotAllowed(
+			ProductDeletionNotAllowedException exception,
 			HttpServletRequest request
 	) {
 		return buildResponse(HttpStatus.CONFLICT, exception.getMessage(), request.getRequestURI(), null);
@@ -51,7 +69,7 @@ public class GlobalExceptionHandler {
 
 		return buildResponse(
 				HttpStatus.BAD_REQUEST,
-				"Validation failed",
+				"La validation a echoue",
 				request.getRequestURI(),
 				fieldErrors
 		);
@@ -64,7 +82,7 @@ public class GlobalExceptionHandler {
 	) {
 		return buildResponse(
 				HttpStatus.INTERNAL_SERVER_ERROR,
-				"An unexpected error occurred",
+				"Une erreur inattendue est survenue",
 				request.getRequestURI(),
 				null
 		);
@@ -79,7 +97,7 @@ public class GlobalExceptionHandler {
 		ApiErrorResponse response = new ApiErrorResponse(
 				Instant.now(),
 				status.value(),
-				status.getReasonPhrase(),
+				STATUS_LABELS.getOrDefault(status, status.getReasonPhrase()),
 				message,
 				path,
 				fieldErrors

@@ -62,28 +62,31 @@ public class SupplierServiceImpl implements SupplierService {
 	}
 
 	private Supplier findSupplierById(Long id) {
+		// Regle metier : un fournisseur doit exister avant toute consultation, modification ou suppression.
 		return supplierRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Supplier not found with id: " + id));
+				.orElseThrow(() -> new ResourceNotFoundException("Fournisseur introuvable avec l'identifiant : " + id));
 	}
 
 	private void validateUniqueFields(SupplierRequest request, Long supplierId) {
 		String normalizedName = request.name() == null ? null : request.name().trim();
 		String normalizedEmail = request.email() == null ? null : request.email().trim().toLowerCase();
 
+		// Regle metier : deux fournisseurs ne peuvent pas partager le meme nom.
 		boolean nameExists = supplierId == null
 				? supplierRepository.existsByNameIgnoreCase(normalizedName)
 				: supplierRepository.existsByNameIgnoreCaseAndIdNot(normalizedName, supplierId);
 
 		if (nameExists) {
-			throw new DuplicateResourceException("Supplier name already exists: " + normalizedName);
+			throw new DuplicateResourceException("Le nom du fournisseur existe deja : " + normalizedName);
 		}
 
+		// Regle metier : l'email fournisseur doit etre unique pour eviter les doublons de contact.
 		boolean emailExists = supplierId == null
 				? supplierRepository.existsByEmailIgnoreCase(normalizedEmail)
 				: supplierRepository.existsByEmailIgnoreCaseAndIdNot(normalizedEmail, supplierId);
 
 		if (emailExists) {
-			throw new DuplicateResourceException("Supplier email already exists: " + normalizedEmail);
+			throw new DuplicateResourceException("L'email du fournisseur existe deja : " + normalizedEmail);
 		}
 	}
 }

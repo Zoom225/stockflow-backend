@@ -14,10 +14,12 @@ import com.stockflow.entity.Category;
 import com.stockflow.entity.Product;
 import com.stockflow.entity.Supplier;
 import com.stockflow.exception.DuplicateResourceException;
+import com.stockflow.exception.ProductDeletionNotAllowedException;
 import com.stockflow.exception.ResourceNotFoundException;
 import com.stockflow.mapper.ProductMapper;
 import com.stockflow.repository.CategoryRepository;
 import com.stockflow.repository.ProductRepository;
+import com.stockflow.repository.StockMovementRepository;
 import com.stockflow.repository.SupplierRepository;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -41,6 +43,9 @@ class ProductServiceImplTests {
 	@Mock
 	private SupplierRepository supplierRepository;
 
+	@Mock
+	private StockMovementRepository stockMovementRepository;
+
 	private ProductServiceImpl productService;
 
 	@BeforeEach
@@ -49,6 +54,7 @@ class ProductServiceImplTests {
 				productRepository,
 				categoryRepository,
 				supplierRepository,
+				stockMovementRepository,
 				new ProductMapper()
 		);
 	}
@@ -213,10 +219,23 @@ class ProductServiceImplTests {
 		Product product = buildProduct(1L, "SKU-001", "Olive Oil", category, null);
 
 		when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+		when(stockMovementRepository.existsByProductId(1L)).thenReturn(false);
 
 		productService.deleteProduct(1L);
 
 		verify(productRepository).delete(product);
+	}
+
+	@Test
+	void shouldRejectDeletionWhenProductHasStockHistory() {
+		Category category = buildCategory(1L, "Food");
+		Product product = buildProduct(1L, "SKU-001", "Olive Oil", category, null);
+
+		when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+		when(stockMovementRepository.existsByProductId(1L)).thenReturn(true);
+
+		assertThrows(ProductDeletionNotAllowedException.class, () -> productService.deleteProduct(1L));
+		verify(productRepository, never()).delete(product);
 	}
 
 	private Product buildProduct(Long id, String sku, String name, Category category, Supplier supplier) {
