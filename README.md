@@ -58,8 +58,20 @@ Tu peux surcharger la connexion par defaut avec :
 - `DB_URL`
 - `DB_USERNAME`
 - `DB_PASSWORD`
+- `JWT_SECRET`
+- `JWT_EXPIRATION_MS`
+
+`JWT_SECRET` doit etre une cle Base64 suffisamment longue pour signer les tokens JWT.
 
 ## Endpoints API
+
+### Authentification
+
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+
+Les endpoints d'authentification permettent de creer un compte puis d'obtenir un token JWT.
+Tous les autres endpoints de l'API necessitent le header `Authorization: Bearer <token>`.
 
 ### Tableau de bord
 

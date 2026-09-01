@@ -22,6 +22,7 @@ public class GlobalExceptionHandler {
 		STATUS_LABELS.put(HttpStatus.BAD_REQUEST, "Requete incorrecte");
 		STATUS_LABELS.put(HttpStatus.NOT_FOUND, "Ressource introuvable");
 		STATUS_LABELS.put(HttpStatus.CONFLICT, "Conflit");
+		STATUS_LABELS.put(HttpStatus.UNAUTHORIZED, "Non autorise");
 		STATUS_LABELS.put(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur interne du serveur");
 	}
 
@@ -47,6 +48,14 @@ public class GlobalExceptionHandler {
 			HttpServletRequest request
 	) {
 		return buildResponse(HttpStatus.CONFLICT, exception.getMessage(), request.getRequestURI(), null);
+	}
+
+	@ExceptionHandler(AuthenticationFailedException.class)
+	public ResponseEntity<ApiErrorResponse> handleAuthenticationFailed(
+			AuthenticationFailedException exception,
+			HttpServletRequest request
+	) {
+		return buildResponse(HttpStatus.UNAUTHORIZED, exception.getMessage(), request.getRequestURI(), null);
 	}
 
 	@ExceptionHandler(InsufficientStockException.class)
