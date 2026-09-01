@@ -73,6 +73,14 @@ Tu peux surcharger la connexion par defaut avec :
 Les endpoints d'authentification permettent de creer un compte puis d'obtenir un token JWT.
 Tous les autres endpoints de l'API necessitent le header `Authorization: Bearer <token>`.
 
+## Documentation Swagger
+
+- `GET /swagger-ui.html`
+- `GET /v3/api-docs`
+- `GET /v3/api-docs.yaml`
+
+Swagger permet de visualiser tous les endpoints de l'API et de tester les routes protegees avec un token Bearer JWT.
+
 ### Utilisateurs
 
 - `GET /api/users`
