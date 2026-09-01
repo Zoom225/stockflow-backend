@@ -11,8 +11,15 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
 	boolean existsBySkuIgnoreCaseAndIdNot(String sku, Long id);
 
+	@Query("""
+			select p
+			from Product p
+			where p.quantityInStock <= p.minimumStock
+			order by p.quantityInStock asc, p.name asc
+			""")
 	List<Product> findByQuantityInStockLessThanEqualMinimumStockOrderByQuantityInStockAscNameAsc();
 
+	@Query("select count(p) from Product p where p.quantityInStock <= p.minimumStock")
 	long countByQuantityInStockLessThanEqualMinimumStock();
 
 	@Query("select coalesce(sum(p.quantityInStock), 0) from Product p")

@@ -63,6 +63,22 @@ Tu peux surcharger la connexion par defaut avec :
 
 `JWT_SECRET` doit etre une cle Base64 suffisamment longue pour signer les tokens JWT.
 
+## Tests
+
+Lancer les tests unitaires et API sans base externe :
+
+```bash
+./mvnw test
+```
+
+Lancer les tests d'integration base de donnees avec PostgreSQL Testcontainers :
+
+```bash
+./mvnw verify -Pdb-integration-tests
+```
+
+Ces tests demarrent un conteneur PostgreSQL, appliquent les migrations Flyway, puis verifient les mappings JPA, les repositories et les contraintes SQL.
+
 ## Endpoints API
 
 ### Authentification
