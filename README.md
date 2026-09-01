@@ -61,6 +61,12 @@ Tu peux surcharger la connexion par defaut avec :
 
 ## Endpoints API
 
+### Tableau de bord
+
+- `GET /api/dashboard/summary`
+
+L'endpoint du tableau de bord retourne les principaux indicateurs du stock ainsi que les derniers mouvements.
+
 ### Produits
 
 - `GET /api/products`
