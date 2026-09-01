@@ -61,7 +61,7 @@ Tu peux surcharger la connexion par defaut avec :
 - `JWT_SECRET`
 - `JWT_EXPIRATION_MS`
 
-`JWT_SECRET` doit etre une cle Base64 suffisamment longue pour signer les tokens JWT.
+Par defaut, l'application utilise une cle JWT de developpement. En dehors du local, `JWT_SECRET` doit etre une cle Base64 suffisamment longue pour signer les tokens JWT.
 
 ## Tests
 
