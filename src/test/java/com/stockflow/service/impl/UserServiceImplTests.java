@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.stockflow.dto.request.UpdateUserRequest;
+import com.stockflow.dto.request.UpdateUserRoleRequest;
 import com.stockflow.dto.response.UserResponse;
 import com.stockflow.entity.AppUser;
 import com.stockflow.entity.UserRole;
@@ -107,6 +108,20 @@ class UserServiceImplTests {
 		userService.deleteUser(1L);
 
 		verify(userRepository).delete(user);
+	}
+
+	@Test
+	void shouldUpdateUserRole() {
+		AppUser existingUser = buildUser(1L, "Jean Dupont", "jean@example.com");
+		AppUser updatedUser = buildUser(1L, "Jean Dupont", "jean@example.com");
+		updatedUser.setRole(UserRole.ROLE_ADMIN);
+
+		when(userRepository.findById(1L)).thenReturn(Optional.of(existingUser));
+		when(userRepository.save(existingUser)).thenReturn(updatedUser);
+
+		UserResponse response = userService.updateUserRole(1L, new UpdateUserRoleRequest(UserRole.ROLE_ADMIN));
+
+		assertEquals("ROLE_ADMIN", response.role());
 	}
 
 	private AppUser buildUser(Long id, String fullName, String email) {

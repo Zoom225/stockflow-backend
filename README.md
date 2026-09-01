@@ -86,9 +86,11 @@ Swagger permet de visualiser tous les endpoints de l'API et de tester les routes
 - `GET /api/users`
 - `GET /api/users/{id}`
 - `PUT /api/users/{id}`
+- `PUT /api/users/{id}/role`
 - `DELETE /api/users/{id}`
 
 Les endpoints utilisateurs permettent de consulter, modifier et supprimer les comptes existants.
+Ces endpoints sont reserves aux administrateurs.
 
 ### Tableau de bord
 

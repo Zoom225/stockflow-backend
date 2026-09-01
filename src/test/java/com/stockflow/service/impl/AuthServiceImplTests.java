@@ -67,13 +67,15 @@ class AuthServiceImplTests {
 	void shouldRegisterUser() {
 		RegisterRequest request = new RegisterRequest("Jean Dupont", "jean@example.com", "Password123");
 		AppUser savedUser = buildUser(1L, "Jean Dupont", "jean@example.com");
+		savedUser.setRole(UserRole.ROLE_ADMIN);
 		User userDetails = new User(
 				"jean@example.com",
 				"encoded-password",
-				List.of(new SimpleGrantedAuthority("ROLE_USER"))
+				List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))
 		);
 
 		when(userRepository.existsByEmailIgnoreCase("jean@example.com")).thenReturn(false);
+		when(userRepository.count()).thenReturn(0L);
 		when(passwordEncoder.encode("Password123")).thenReturn("encoded-password");
 		when(userRepository.save(any(AppUser.class))).thenReturn(savedUser);
 		when(userDetailsService.loadUserByUsername("jean@example.com")).thenReturn(userDetails);
@@ -84,7 +86,31 @@ class AuthServiceImplTests {
 		assertNotNull(response);
 		assertEquals("jwt-token", response.accessToken());
 		assertEquals("jean@example.com", response.email());
+		assertEquals("ROLE_ADMIN", response.role());
 		verify(userRepository).save(any(AppUser.class));
+	}
+
+	@Test
+	void shouldRegisterSecondUserWithStandardRole() {
+		RegisterRequest request = new RegisterRequest("Marie Martin", "marie@example.com", "Password123");
+		AppUser savedUser = buildUser(2L, "Marie Martin", "marie@example.com");
+		savedUser.setRole(UserRole.ROLE_USER);
+		User userDetails = new User(
+				"marie@example.com",
+				"encoded-password",
+				List.of(new SimpleGrantedAuthority("ROLE_USER"))
+		);
+
+		when(userRepository.existsByEmailIgnoreCase("marie@example.com")).thenReturn(false);
+		when(userRepository.count()).thenReturn(3L);
+		when(passwordEncoder.encode("Password123")).thenReturn("encoded-password");
+		when(userRepository.save(any(AppUser.class))).thenReturn(savedUser);
+		when(userDetailsService.loadUserByUsername("marie@example.com")).thenReturn(userDetails);
+		when(jwtService.generateToken(userDetails)).thenReturn("jwt-token");
+
+		AuthResponse response = authService.register(request);
+
+		assertEquals("ROLE_USER", response.role());
 	}
 
 	@Test

@@ -46,7 +46,9 @@ public class AuthServiceImpl implements AuthService {
 		user.setFullName(request.fullName().trim());
 		user.setEmail(normalizedEmail);
 		user.setPasswordHash(passwordEncoder.encode(request.password()));
-		user.setRole(UserRole.ROLE_USER);
+
+		// Regle metier : le premier compte cree devient administrateur pour permettre l'administration initiale.
+		user.setRole(userRepository.count() == 0 ? UserRole.ROLE_ADMIN : UserRole.ROLE_USER);
 
 		AppUser savedUser = userRepository.save(user);
 		UserDetails userDetails = userDetailsService.loadUserByUsername(savedUser.getEmail());

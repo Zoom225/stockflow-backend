@@ -1,6 +1,7 @@
 package com.stockflow.service.impl;
 
 import com.stockflow.dto.request.UpdateUserRequest;
+import com.stockflow.dto.request.UpdateUserRoleRequest;
 import com.stockflow.dto.response.UserResponse;
 import com.stockflow.entity.AppUser;
 import com.stockflow.exception.DuplicateResourceException;
@@ -40,6 +41,17 @@ public class UserServiceImpl implements UserService {
 		validateUniqueEmail(request.email(), id);
 
 		userMapper.updateEntity(user, request);
+		AppUser updatedUser = userRepository.save(user);
+		return userMapper.toResponse(updatedUser);
+	}
+
+	@Override
+	@Transactional
+	public UserResponse updateUserRole(Long id, UpdateUserRoleRequest request) {
+		AppUser user = findUserById(id);
+
+		// Regle metier : seul un changement de role explicite doit modifier les droits d'un utilisateur.
+		user.setRole(request.role());
 		AppUser updatedUser = userRepository.save(user);
 		return userMapper.toResponse(updatedUser);
 	}
