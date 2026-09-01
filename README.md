@@ -73,6 +73,15 @@ Tu peux surcharger la connexion par defaut avec :
 Les endpoints d'authentification permettent de creer un compte puis d'obtenir un token JWT.
 Tous les autres endpoints de l'API necessitent le header `Authorization: Bearer <token>`.
 
+### Utilisateurs
+
+- `GET /api/users`
+- `GET /api/users/{id}`
+- `PUT /api/users/{id}`
+- `DELETE /api/users/{id}`
+
+Les endpoints utilisateurs permettent de consulter, modifier et supprimer les comptes existants.
+
 ### Tableau de bord
 
 - `GET /api/dashboard/summary`
