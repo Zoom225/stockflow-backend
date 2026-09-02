@@ -1,10 +1,12 @@
 package com.stockflow.security;
 
+import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -35,6 +37,7 @@ public class SecurityConfig {
 				.csrf(AbstractHttpConfigurer::disable)
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
+						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 						.requestMatchers("/api/auth/**").permitAll()
 						.requestMatchers(
 								"/v3/api-docs/**",
@@ -63,14 +66,20 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	public CorsConfigurationSource corsConfigurationSource(@Value("${frontend.url:}") String frontendUrl) {
+	public CorsConfigurationSource corsConfigurationSource(@Value("${frontend.urls:}") String frontendUrls) {
 		CorsConfiguration configuration = new CorsConfiguration();
-		if (frontendUrl != null && !frontendUrl.isBlank()) {
-			configuration.setAllowedOrigins(List.of(frontendUrl));
+		List<String> allowedOrigins = Arrays.stream(frontendUrls.split(","))
+				.map(String::trim)
+				.filter(origin -> !origin.isBlank())
+				.map(origin -> origin.endsWith("/") ? origin.substring(0, origin.length() - 1) : origin)
+				.toList();
+
+		if (!allowedOrigins.isEmpty()) {
+			configuration.setAllowedOrigins(allowedOrigins);
 			configuration.setAllowCredentials(true);
 		}
 		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-		configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+		configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "Origin"));
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
