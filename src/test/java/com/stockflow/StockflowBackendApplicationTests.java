@@ -5,8 +5,12 @@ import com.stockflow.repository.ProductRepository;
 import com.stockflow.repository.StockMovementRepository;
 import com.stockflow.repository.SupplierRepository;
 import com.stockflow.repository.UserRepository;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest(properties = {
@@ -16,7 +20,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 				"org.springframework.boot.jdbc.autoconfigure.JdbcClientAutoConfiguration," +
 				"org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration," +
 				"org.springframework.boot.data.jpa.autoconfigure.DataJpaRepositoriesAutoConfiguration",
-		"jwt.secret=MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWYwMTIzNDU2Nzg5YWJjZGVm",
 		"jwt.expiration-ms=86400000"
 })
 class StockflowBackendApplicationTests {
@@ -36,8 +39,18 @@ class StockflowBackendApplicationTests {
 	@MockitoBean
 	private UserRepository userRepository;
 
+	@DynamicPropertySource
+	static void registerJwtProperties(DynamicPropertyRegistry registry) {
+		registry.add("jwt.secret", StockflowBackendApplicationTests::testJwtSecret);
+	}
+
 	@Test
 	void contextLoads() {
+	}
+
+	private static String testJwtSecret() {
+		return Base64.getEncoder()
+				.encodeToString("stockflow-context-test-jwt-signing-key-not-for-real-use".getBytes(StandardCharsets.UTF_8));
 	}
 
 }

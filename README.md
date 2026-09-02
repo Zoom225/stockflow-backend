@@ -51,17 +51,81 @@ Les identifiants par defaut de la base sont :
 
 Au demarrage, Flyway applique les migrations SQL situees dans `src/main/resources/db/migration` et Hibernate verifie que les mappings des entites correspondent bien au schema.
 
-### 3. Variables d'environnement optionnelles
+### 3. Variables d'environnement
 
-Tu peux surcharger la connexion par defaut avec :
+Configure ces variables avant de lancer l'application :
 
 - `DB_URL`
 - `DB_USERNAME`
 - `DB_PASSWORD`
 - `JWT_SECRET`
 - `JWT_EXPIRATION_MS`
+- `FRONTEND_URL`
 
 `JWT_SECRET` doit etre une cle Base64 suffisamment longue pour signer les tokens JWT.
+`FRONTEND_URL` peut rester vide tant que le frontend n'est pas deployee.
+
+## Tests
+
+Lancer les tests unitaires et API sans base externe :
+
+```bash
+./mvnw test
+```
+
+Lancer les tests d'integration base de donnees avec PostgreSQL Testcontainers :
+
+```bash
+./mvnw verify -Pdb-integration-tests
+```
+
+Ces tests demarrent un conteneur PostgreSQL, appliquent les migrations Flyway, puis verifient les mappings JPA, les repositories et les contraintes SQL.
+
+## Deploiement Neon + Render
+
+### 1. Creer la base PostgreSQL sur Neon
+
+Dans Neon :
+
+- cree un projet PostgreSQL
+- ouvre le bouton `Connect`
+- recupere les champs `host`, `database`, `user` et `password`
+- active une connexion SSL avec `sslmode=require`
+
+Pour Render, configure ces variables d'environnement :
+
+```text
+DB_URL=jdbc:postgresql://<host>/<database>?sslmode=require
+DB_USERNAME=<user>
+DB_PASSWORD=<password>
+JWT_SECRET=<cle-base64-longue>
+JWT_EXPIRATION_MS=86400000
+FRONTEND_URL=
+```
+
+### 2. Deployer le backend sur Render
+
+Dans Render :
+
+- cree un `Web Service`
+- connecte le repository GitHub du backend
+- choisis un deploiement avec `Docker`
+- branche : `feature/db-integration-tests` ou `main` apres merge
+- Dockerfile : `Dockerfile`
+- Health Check Path : `/swagger-ui.html`
+- ajoute les variables d'environnement Neon ci-dessus
+
+Render fournit automatiquement la variable `PORT`; l'application l'utilise via `server.port=${PORT:8080}`.
+
+### 3. Verifier le deploiement
+
+Apres le deploiement, ouvre :
+
+```text
+https://<ton-service-render>.onrender.com/swagger-ui.html
+```
+
+Flyway applique les migrations au demarrage sur la base Neon.
 
 ## Endpoints API
 
