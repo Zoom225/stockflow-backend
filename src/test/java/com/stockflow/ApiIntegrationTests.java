@@ -23,7 +23,9 @@ import com.stockflow.service.ProductService;
 import com.stockflow.service.StockMovementService;
 import com.stockflow.service.SupplierService;
 import com.stockflow.service.UserService;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +35,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -44,7 +48,6 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 				"org.springframework.boot.jdbc.autoconfigure.JdbcClientAutoConfiguration," +
 				"org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration," +
 				"org.springframework.boot.data.jpa.autoconfigure.DataJpaRepositoriesAutoConfiguration",
-		"jwt.secret=MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWYwMTIzNDU2Nzg5YWJjZGVm",
 		"jwt.expiration-ms=86400000"
 })
 class ApiIntegrationTests {
@@ -79,6 +82,11 @@ class ApiIntegrationTests {
 
 	@MockitoBean
 	private CustomUserDetailsService customUserDetailsService;
+
+	@DynamicPropertySource
+	static void registerJwtProperties(DynamicPropertyRegistry registry) {
+		registry.add("jwt.secret", ApiIntegrationTests::testJwtSecret);
+	}
 
 	@BeforeEach
 	void setUp() {
@@ -186,5 +194,10 @@ class ApiIntegrationTests {
 						.content(objectMapper.writeValueAsString(request)))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.role").value("ROLE_ADMIN"));
+	}
+
+	private static String testJwtSecret() {
+		return Base64.getEncoder()
+				.encodeToString("stockflow-api-test-jwt-signing-key-not-for-real-use".getBytes(StandardCharsets.UTF_8));
 	}
 }
