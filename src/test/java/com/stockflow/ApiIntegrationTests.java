@@ -3,8 +3,10 @@ package com.stockflow;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -48,7 +50,8 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 				"org.springframework.boot.jdbc.autoconfigure.JdbcClientAutoConfiguration," +
 				"org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration," +
 				"org.springframework.boot.data.jpa.autoconfigure.DataJpaRepositoriesAutoConfiguration",
-		"jwt.expiration-ms=86400000"
+		"jwt.expiration-ms=86400000",
+		"frontend.urls=https://gestions-stock-demo.vercel.app,http://localhost:4200"
 })
 class ApiIntegrationTests {
 
@@ -93,6 +96,19 @@ class ApiIntegrationTests {
 		mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
 				.apply(springSecurity())
 				.build();
+	}
+
+	@Test
+	void shouldAllowProductionCorsPreflightForLogin() throws Exception {
+		mockMvc.perform(options("/api/auth/login")
+						.header("Origin", "https://gestions-stock-demo.vercel.app")
+						.header("Access-Control-Request-Method", "POST")
+						.header("Access-Control-Request-Headers", "content-type"))
+				.andExpect(status().isOk())
+				.andExpect(header().string(
+						"Access-Control-Allow-Origin",
+						"https://gestions-stock-demo.vercel.app"
+				));
 	}
 
 	@Test
